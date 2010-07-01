@@ -19,4 +19,4 @@ webroot/cachetest01.cfm
 webroot/reload.cfm
 webroot/extension
 webroot/verify.cfm
-webroot/WEB-INF/.htaccess
+webroot/WEB-INF/
