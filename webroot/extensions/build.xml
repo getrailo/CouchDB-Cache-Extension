@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="CouchDBBuilder" basedir="." default="compressExtension">
+
+	<!-- Created by Mark Drew on 2010-05-11. -->
+	<!-- Copyright (c) 2010 Railo Technologies. All rights reserved. -->
+
+	
+	<property name="extPath" location="couchdb_cache_extension/" />
+	<tstamp prefix="stamp">
+		 <format property="TODAY_UK" pattern="yyyyMMMMdhhmm" locale="en,UK"/>
+	</tstamp>
+	<tstamp prefix="created">
+		<format property="TODAY" pattern="yyyy-MMMM-d" locale="en,UK"/>
+		<format property="TSTAMP" pattern="HH:mm" locale="en,UK"/>
+	</tstamp>
+		
+	<target name="runtests" depends="removeExtension">
+		<get src="http://localhost:8888/cachetests/index.cfm" dest="results.html" />
+	</target>
+	
+	
+	<target name="removeExtension" depends="compressExtension">
+		<get src="http://localhost:8888/extensions/reload.cfm" dest="output.html"/>
+	</target>
+	
+	<!--
+	<target name="uploadExtension" depends="compressExtension">
+		<ftp server="vm112.edgewebhosting.net"
+		       remotedir="/wwwroot/extensions"
+		       userid="markdrew"
+		       password="universe"
+		       depends="yes">
+		    <fileset dir=".">
+				<include name="ExtensionProvider.cfc" />
+				<include name="ext/" />
+			</fileset>
+		  </ftp>
+	
+	</target>
+	-->
+	
+	<target name="compressExtension" depends="replaceConfigVars">
+		<zip destfile="ext/CouchDBCache.zip" basedir="couchdb_cache_extension/" excludes="couchdb_cache_extension/src" />		
+	</target>
+	
+
+	<target name="replaceConfigVars" depends="copyLibs">
+		<copy file="${extPath}/config.template.xml" tofile="${extPath}/config.xml" overwrite="true" />
+		<replace file="${extPath}/config.xml" token="{version}" value="1.${stamp.DSTAMP}${stamp.TSTAMP}" />
+		<replace file="${extPath}/config.xml" token="{created}" value="${created.TODAY} ${created.TSTAMP}" />
+	</target>
+	
+	<target name="copyLibs" depends="createJar">
+		<copy todir="couchdb_cache_extension/lib/">
+		    <fileset dir="lib/">
+		      <include name="*.jar"/>
+		    </fileset>
+		</copy>
+	
+	</target>
+	
+	<target name="createJar" depends="deleteArchives">
+			<path id="master-classpath">
+			  <fileset dir="../../lib">
+			    <include name="*.jar"/>
+			  </fileset>
+			 <fileset dir="lib/">
+			    <include name="*.jar"/>
+			  </fileset>	
+				
+			</path>
+		
+		<javac srcdir="couchdb_cache_extension/src">
+			 <classpath refid="master-classpath"/>
+			
+		
+		</javac>
+		<jar basedir="couchdb_cache_extension/src" destfile="couchdb_cache_extension/lib/CouchDBCache.jar" />
+	</target>
+	
+	<target name="deleteArchives">
+		<delete dir="couchdb_cache_extension/lib/" includes="*.jar" />
+		<delete dir="ext/" includes="*.zip"/>
+		<mkdir dir="couchdb_cache_extension/lib/" />
+	</target>
+
+</project>

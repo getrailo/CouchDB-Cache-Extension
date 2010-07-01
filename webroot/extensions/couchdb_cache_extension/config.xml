@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- 
+	Path placeholders:
+		{railo-web}: path to the railo web directory typical "{web-root}/WEB-INF/railo"
+		{railo-server}: path to the railo server directory typical where the railo.jar is located
+		{temp-directory}: path to the temp directory of the current user of the system
+		{home-directory}: path to the home directory of the current user of the system
+		{web-root-directory}: path to the web root
+		{system-directory}: path to thesystem directory
+
+-->
+
+<config>
+	<info>
+		<id>10EEC23A-0779-4068-9507A9C5ED4A8646</id>
+		<version>1.201007012038</version>
+		<name>couch</name>
+		<type>server</type>
+		<label>CouchDB Cache</label>
+		<description>CouchDB Cache extension</description>
+		<!-- <created>2009-8-12T12:0:0+0:0</created> -->
+		<created>2010-July-1 20:38</created> 
+		<category>Core Extension</category>    
+	</info>
+</config>
+

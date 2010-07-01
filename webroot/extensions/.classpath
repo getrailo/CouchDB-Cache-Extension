@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="couchdb_cache_extension/src"/>
+	<classpathentry kind="lib" path="lib/jcouchdb-0.11.0-1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-beanutils-1.8.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.0.jar"/>
+	<classpathentry kind="lib" path="lib/httpcore-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jcl-over-slf4j-1.5.6.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.14.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.5.6.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.5.6.jar"/>
+	<classpathentry kind="lib" path="lib/svenson-1.3.7.jar"/>
+	<classpathentry kind="lib" path="lib/jrelax-0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-asl-1.5.4.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-mapper-asl-1.5.4.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Applications/Servers/railo_jetty_debug/lib/railo.jar" sourcepath="/Railo-Core"/>
+	<classpathentry kind="lib" path="/Applications/Servers/railo_jetty_debug/lib/apache-jakarta-commons-collections.jar"/>
+	<classpathentry kind="lib" path="/Applications/Servers/railo_jetty_debug/lib/javax.servlet.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
