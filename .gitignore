@@ -4,7 +4,7 @@ bin/
 contexts/
 etc/
 install.txt
-lib/
+/lib/
 patches/
 server.xml
 start
