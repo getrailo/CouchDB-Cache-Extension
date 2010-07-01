@@ -14,7 +14,7 @@ LICENSES/
 wwebroot/ExtensionProviderProxy.cfc	
 wwebroot/SampleComponent.cfc
 wwebroot/functions.cfm
-wwebroot/WEB-INF/
+/wwebroot/WEB-INF/
 wwebroot/index.cfm
 wwebroot/cachetest01.cfm
 wwebroot/reload.cfm
