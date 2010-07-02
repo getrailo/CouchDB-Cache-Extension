@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>index</title>
+	<title>Cache Tests</title>
 	<meta name="generator" content="TextMate http://macromates.com/">
 	<meta name="author" content="Mark Drew">
 	<!-- Date: 2010-05-24 -->
