@@ -24,3 +24,4 @@ webroot/extensions/couchdb_cache_extension/lib/*.jar
 webroot/extensions/ext/*.zip
 webroot/extensions/couchdb_cache_extension/src/*.class
 webroot/extensions/couchdb_cache_extension/src/railo/extension/io/cache/couchdb/*.class
+webroot/extensions/output/*.*
