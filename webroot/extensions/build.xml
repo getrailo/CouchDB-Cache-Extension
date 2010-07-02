@@ -83,6 +83,8 @@
 	<target name="deleteArchives">
 		<delete dir="couchdb_cache_extension/lib/" includes="*.jar" />
 		<delete dir="ext/" includes="*.zip"/>
+		<delete dir="output/" includes="*.html"/>
+		<delete file="couchdb_cache_extension/config.xml" />
 		<mkdir dir="couchdb_cache_extension/lib/" />
 	</target>
 
