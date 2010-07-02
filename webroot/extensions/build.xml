@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="CouchDBBuilder" basedir="." default="compressExtension">
+<project name="CouchDBBuilder" basedir="." default="updateExtension">
 
 	<!-- Created by Mark Drew on 2010-05-11. -->
 	<!-- Copyright (c) 2010 Railo Technologies. All rights reserved. -->
@@ -14,16 +14,18 @@
 		<format property="TSTAMP" pattern="HH:mm" locale="en,UK"/>
 	</tstamp>
 		
-	<target name="runtests" depends="removeExtension">
+	<target name="runtests" depends="updateExtension">
+		<!-- wait a few seconds for the server to start -->
+		<sleep seconds="20" />
 		<get src="http://localhost:8888/cachetests/index.cfm" dest="results.html" />
 	</target>
 	
 	
-	<target name="removeExtension" depends="compressExtension">
+	<target name="updateExtension" depends="compressExtension">
 		<get src="http://localhost:8888/extensions/reload.cfm" dest="output.html"/>
 	</target>
 	
-	<!--
+	
 	<target name="uploadExtension" depends="compressExtension">
 		<ftp server="vm112.edgewebhosting.net"
 		       remotedir="/wwwroot/extensions"
@@ -37,7 +39,7 @@
 		  </ftp>
 	
 	</target>
-	-->
+
 	
 	<target name="compressExtension" depends="replaceConfigVars">
 		<zip destfile="ext/CouchDBCache.zip" basedir="couchdb_cache_extension/" excludes="couchdb_cache_extension/src" />		
