@@ -20,3 +20,6 @@ webroot/reload.cfm
 webroot/extension
 webroot/verify.cfm
 webroot/WEB-INF/
+webroot/extensions/couchdb_cache_extension/lib/*.jar
+webroot/extensions/ext/*.zip
+webroot/extensions/couchdb_cache_extension/src/*.class
