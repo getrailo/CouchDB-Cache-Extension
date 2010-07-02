@@ -21,15 +21,15 @@ public class CouchDBCacheEntry implements CacheEntry {
 	private long created;
 	private long modifed;
 	private long accessed;
-	private int hitCount;
+	private int hitCount = 0;
 	
 	private String _id;
-	private Map document;
+	private CouchDBCacheDocument document;
 	
 	
 	
-	public CouchDBCacheEntry(Map document,String key, Object value, Long idleTime, Long until) {
-		this.document = document;
+	public CouchDBCacheEntry(CouchDBCacheDocument docnew,String key, Object value, Long idleTime, Long until) {
+		this.document = docnew;
 		this.key=key;
 		this.value=value;
 		this.idleTime=idleTime==null?Long.MIN_VALUE:idleTime.longValue();
@@ -40,7 +40,7 @@ public class CouchDBCacheEntry implements CacheEntry {
 	}
 	public Struct getCustomInfo() {
 		Struct info=CFMLEngineFactory.getInstance().getCreationUtil().createStruct();
-		info.setEL("_rev", document.get("_rev"));
+		info.setEL("_rev", document.getRevision());
 		return info;
 	}
 	
@@ -58,7 +58,8 @@ public class CouchDBCacheEntry implements CacheEntry {
 	}
 
 	public int hitCount() {
-		throw new RuntimeException("method hitCount not implemented yet");
+		return this.hitCount;
+		
 	}
 
 	public long idleTimeSpan() {

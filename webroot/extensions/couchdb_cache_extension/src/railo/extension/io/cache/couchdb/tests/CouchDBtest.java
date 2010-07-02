@@ -9,7 +9,10 @@ import org.jcouchdb.db.Database;
 import org.jcouchdb.document.Document;
 import org.jcouchdb.document.ValueRow;
 import org.jcouchdb.document.ViewResult;
+import org.jcouchdb.exception.NotFoundException;
+import org.jcouchdb.exception.UpdateConflictException;
 
+import railo.extension.io.cache.couchdb.CouchDBCacheDocument;
 import railo.extension.io.cache.couchdb.CouchDBCacheEntry;
 
 import java.util.List;
@@ -25,20 +28,17 @@ public class CouchDBtest {
 	
 	public static void main(String[] args) {
 
+		//Our own specific couchDB Cache Document
 		Database db = new Database(host, port, database);
-		ViewResult vresult = db.listDocuments(null, null);
 		
-		List list=new ArrayList();
-		
-		Iterator it = vresult.getRows().iterator();
-		CouchDBCacheEntry entry;
-		while(it.hasNext()){
-			ValueRow row = (ValueRow)it.next();
-			Map doc = db.getDocument(Map.class, row.getId());
-			db.delete(row.getId(), (String)doc.get("_rev"));
+		try {
+			CouchDBCacheDocument doc2 = db.getDocument(CouchDBCacheDocument.class, "bubba");
+		}
+		catch(NotFoundException nfe){
+			System.out.println("Document not found");
 		}
 		
-		System.out.println("Test Passed!");
+		
 		
 	}
 	

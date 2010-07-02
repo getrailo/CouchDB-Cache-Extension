@@ -14,6 +14,7 @@ import org.jcouchdb.document.Document;
 import org.jcouchdb.document.ValueRow;
 import org.jcouchdb.document.ViewResult;
 import org.jcouchdb.exception.NotFoundException;
+import org.jcouchdb.exception.UpdateConflictException;
 
 
 import railo.commons.io.cache.Cache;
@@ -54,17 +55,14 @@ public class CouchDBCache implements Cache{
 	
 	
 	public void init(String cacheName, Struct arguments) throws IOException {
-		log("Starting up the Extensions 1, "  + cacheName + " args " + arguments);
-	//		init(null, cacheName, arguments);
+		throw new RuntimeException("method init(String cacheName, Struct arguments) not implemented yet");
 	}
 	
 	public void init(Config config ,String[] cacheName,Struct[] arguments){
-		log("Starting up the Extensions 2, "  + cacheName + " args " + arguments);
-		//init(config, cacheName, arguments);
+		throw new RuntimeException("method init(Config config ,String[] cacheName,Struct[] arguments) not implemented yet");
 	}
 
 	public void init(Config config, String cacheName, Struct arguments) {
-		log("Starting up the Extensions 3, "  + cacheName + " args " + arguments);
 		
 		this.cacheName = cacheName;
 		CFMLEngine engine = CFMLEngineFactory.getInstance();
@@ -91,36 +89,38 @@ public class CouchDBCache implements Cache{
 			data = pc.evaluate("serialize(mySerialize)");
 			pc.setVariable("mySerialize", data);
 			data = pc.evaluate("serializeJSON(mySerialize)");
-			
 		} catch (PageException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	
-		//Get an item first, get it's revision and then save it, this will keep track of stuff much easier. 
-		
-		
 		Database db = new Database(host, port, database);
 		
+	
+		//Try saving native documents?
+		CouchDBCacheDocument doc = new CouchDBCacheDocument();
+		doc.setId(key);
+		doc.setData(data);
+		doc.setIdletime(idleTime);
+		doc.setUntil(until);
+	//	doc.setCreated((new Date()).toString());
+		
 		try {
+			/*
 			Map doc = new HashedMap();
 			doc.put("_id", key);
 			doc.put("data", data);
 			doc.put("idleTime", idleTime);
 			doc.put("until", until);
-			doc.put("created", new Date());
+			doc.put("created", (new Date()).toString());
+			doc.put("lastaccessed", (new Date()).toString());
+			doc.put("hitcount", 0);
+			*/
 			db.createOrUpdateDocument(doc);
 			
 			}
-		catch (org.jcouchdb.exception.UpdateConflictException e) {
-			
-			Map docnew2 = db.getDocument(Map.class, key);
-			db.delete(docnew2);
-			Map doc = new HashedMap();
-			doc.put("_id", key);
-			doc.put("data", data);	
-			doc.put("idleTime", idleTime);
-			doc.put("until", until);
+		catch (UpdateConflictException e) {
+			CouchDBCacheDocument docnew2 = db.getDocument(CouchDBCacheDocument.class, key);
+			doc.setRevision(docnew2.getRevision());
 			db.createOrUpdateDocument(doc);
 		}
 		
@@ -132,7 +132,7 @@ public class CouchDBCache implements Cache{
 			return getCacheEntry(key);
 		}
 		catch(Exception nfe){
-			return new CouchDBCacheEntry(new HashMap(),key, defaultValue, null, null);
+			return new CouchDBCacheEntry(new CouchDBCacheDocument(),key, defaultValue, null, null);
 		}
 	}
 	
@@ -141,10 +141,12 @@ public class CouchDBCache implements Cache{
 	
 	public CouchDBCacheEntry getCacheEntry(String key){
 		Database db = new Database(host, port, database);
-		Map docnew = new HashMap();
 		Object retString = "";
 			
-		docnew = db.getDocument(Map.class, key);
+			CouchDBCacheDocument docnew = db.getDocument(CouchDBCacheDocument.class, key);
+			return new CouchDBCacheEntry(docnew, docnew.getId(), docnew.getData(), docnew.getIdletime(), docnew.getUntil());
+		/*
+		CouchDBCacheDocument docnew = db.getDocument(CouchDBCacheDocument.class, key);
 		retString = docnew.get("data");	
 		
 		CFMLEngine engine = CFMLEngineFactory.getInstance();
@@ -159,6 +161,7 @@ public class CouchDBCache implements Cache{
 		}
 		
 		return new CouchDBCacheEntry(docnew,key, retString, null, null);
+		*/
 	}
 
 
