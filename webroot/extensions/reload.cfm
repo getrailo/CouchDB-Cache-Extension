@@ -1,19 +1,31 @@
-		 <!--- 
- 
+<!--- We can read the congfig here --->
+<cfset exp="this extension is experimental and will no longer work with the final release of railo 3.1, it is not allowed to use this extension in a productve enviroment.">
+<cfset rootURL="http://#CGI.server_name#:#CGI.server_port#/extensions/">
+<cfset zipFileLocation = 'ext/CouchDBCache.zip'>
+<cffile action="read" file="zip://#expandPath(zipFileLocation)#!/config.xml" variable="config">
+<cfset info = XMLParse(config)>
+
+<cfset providerWS =  CreateObject("webservice", "#rootURL#ExtensionProvider.cfc?wsdl")>
+<cfset pInfo = providerWS.getInfo()>
+
+
 <cfadmin action="updateExtension" type="server" password="universe"
-		 provider="http://dev.local/extensions/ExtensionProvider.cfc" id="10EEC23A-0779-4068-9507A9C5ED4A8646" version="1.0_0" 
-		 name="CouchDB" label="CouchDB label" description="My Couch DB install" category="Core Extension"
-		 image=""
+		 provider="#rootURL#ExtensionProvider.cfc"
+		 id="#info.config.info.id.XMLtext#"
+		 version="#info.config.info.version.XMLtext#" 
+		 name="#info.config.info.version.XMLtext#" label="#info.config.info.label.XMLtext#"
+		 description="#info.config.info.version.XMLtext#" category="#info.config.info.category.XMLtext#"
 		 author="markdrew"
-		 codename="CouchDB"
+		 codename="#info.config.info.version.XMLtext#"
+		 image="#pInfo.image#"
 		 video=""
 		 support=""
 		 documentation=""
 		 forum=""
 		 mailinglist=""
 		 network=""
-		 _type="">		 --->
-		
-		
+		 _type="#info.config.info.type.XMLtext#"
+/>		
+<!--- 
 <cfadmin action="restart" type="server" password="universe" />
-		Server restarted<br />		
+ --->
