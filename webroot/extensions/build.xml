@@ -15,14 +15,15 @@
 	</tstamp>
 		
 	<target name="runtests" depends="updateExtension">
-		<!-- wait a few seconds for the server to start -->
+		<!-- wait a few seconds for the server to start 
 		<sleep seconds="20" />
-		<get src="http://localhost:8888/cachetests/index.cfm" dest="output/results.html" />
+		-->
+		<get src="http://localhost:8888/cachetests/index.cfm" dest="output/results.html" ignoreerrors="true" />
 	</target>
 	
 	
 	<target name="updateExtension" depends="compressExtension">
-		<get src="http://localhost:8888/extensions/reload.cfm" dest="output/output.html"/>
+		<get src="http://localhost:8888/extensions/reload.cfm" dest="output/output.html" ignoreerrors="true" />
 	</target>
 	
 	
