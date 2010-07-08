@@ -8,9 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.jcouchdb.db.Database;
-import org.jcouchdb.document.Document;
 import org.jcouchdb.document.ValueRow;
 import org.jcouchdb.document.ViewResult;
 import org.jcouchdb.exception.NotFoundException;
@@ -22,44 +20,32 @@ import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.CacheEntryFilter;
 import railo.commons.io.cache.CacheKeyFilter;
 import railo.commons.io.cache.exp.CacheException;
-import railo.extension.util.Functions;
 
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
-import railo.runtime.PageContext;
 import railo.runtime.config.Config;
-import railo.runtime.exp.PageException;
 import railo.runtime.type.Struct;
 import railo.runtime.util.Cast;
 
 public class CouchDBCache implements Cache{
 	
-	//private Map entries= new ReferenceMap();
-	//private long missCount;
-	//private int hitCount;
-	/*
-	 * 
-	 * 
-	 	CFMLEngine engine = CFMLEngineFactory.getInstance();
-		PageContext pc = engine.getThreadPageContext();
-		pc.evaluate("serializeJson(...)");
-	 */
 	private String cacheName = "";
 	private  String host = "";
 	private int port = 5984;
 	private String database = "";
 	
-	private int hits;
-	private int misses;
+	private int hits = 0;
+	private int misses = 0;
 
-	
-	
+	/**
+	 * @deprecated this method is no longer used by railo and ignored as long the method <code>init(Config config, String cacheName, Struct arguments)</code> exists
+	 */
 	public void init(String cacheName, Struct arguments) throws IOException {
-		throw new RuntimeException("method init(String cacheName, Struct arguments) not implemented yet");
+		//Not used at the moment
 	}
 	
 	public void init(Config config ,String[] cacheName,Struct[] arguments){
-		throw new RuntimeException("method init(Config config ,String[] cacheName,Struct[] arguments) not implemented yet");
+		//Not used at the moment
 	}
 
 	public void init(Config config, String cacheName, Struct arguments) {
@@ -78,130 +64,103 @@ public class CouchDBCache implements Cache{
 		}
 	}
 	
-	public void put(String key, Object value, Long idleTime, Long until) {
-		
-		Object data = value;
-		CFMLEngine engine = CFMLEngineFactory.getInstance();
-		PageContext pc = engine.getThreadPageContext();
-		
-		try {
-			pc.setVariable("mySerialize", data);
-			data = pc.evaluate("serialize(mySerialize)");
-			pc.setVariable("mySerialize", data);
-			data = pc.evaluate("serializeJSON(mySerialize)");
-		} catch (PageException e1) {
-			e1.printStackTrace();
-		}
-	
-		Database db = new Database(host, port, database);
-		
-	
-		//Try saving native documents?
-		CouchDBCacheDocument doc = new CouchDBCacheDocument();
-		doc.setId(key);
-		doc.setData(data);
-		doc.setIdletime(idleTime);
-		doc.setUntil(until);
-	//	doc.setCreated((new Date()).toString());
-		
-		try {
-			/*
-			Map doc = new HashedMap();
-			doc.put("_id", key);
-			doc.put("data", data);
-			doc.put("idleTime", idleTime);
-			doc.put("until", until);
-			doc.put("created", (new Date()).toString());
-			doc.put("lastaccessed", (new Date()).toString());
-			doc.put("hitcount", 0);
-			*/
-			db.createOrUpdateDocument(doc);
-			
+	public void put(String key, Object value, Long idleTime, Long lifespan) {
+		Boolean eternal = idleTime==null && lifespan==null?Boolean.TRUE:Boolean.FALSE;
+		Long created = System.currentTimeMillis();
+		String idle = idleTime==null?"0":new Long(idleTime).toString();
+		String life = lifespan==null?"0":new Long(lifespan).toString();
+			if(idle.equals("0") && life.equals("0")){
+				eternal = Boolean.TRUE;
 			}
-		catch (UpdateConflictException e) {
-			CouchDBCacheDocument docnew2 = db.getDocument(CouchDBCacheDocument.class, key);
-			doc.setRevision(docnew2.getRevision());
-			db.createOrUpdateDocument(doc);
-		}
 		
+		
+		//String = liveTime==null?null:new Integer((int)liveTime.longValue()/1000);
+		
+		CouchDBCacheDocument doc = new CouchDBCacheDocument();
+			doc.setId(key);
+			doc.setData(value);
+			doc.setCreatedDate(new Long(created).toString());
+			doc.setLastAccessed(new Long(created).toString());
+			doc.setEternal(eternal);
+			doc.setIdleTime(idle);
+			doc.setExpires(life);
+
+			quickSave(doc);
+		
+	}
+	
+	private void quickSave(CouchDBCacheDocument doc){
+		Database db = new Database(host, port, database);
+			boolean exists = false;
+			CouchDBCacheDocument existingdoc = null;
+		try{
+			existingdoc = db.getDocument(CouchDBCacheDocument.class, doc.getId());
+			exists = true;
+		}
+		catch (NotFoundException nfe){ }
+		
+		if(exists && existingdoc != null){
+			doc.setRevision(existingdoc.getRevision());
+			db.updateDocument(doc);
+		}
+		else {
+			db.createDocument(doc);
+		}
 		
 	}
 	
 	public CouchDBCacheEntry getCacheEntry(String key, CacheEntry defaultValue) {
 		try{
+			hits++;
 			return getCacheEntry(key);
 		}
 		catch(Exception nfe){
-			return new CouchDBCacheEntry(new CouchDBCacheDocument(),key, defaultValue, null, null);
+			misses++;
+			CouchDBCacheDocument defaultdoc = new CouchDBCacheDocument();
+				defaultdoc.setData(defaultValue);
+			return new CouchDBCacheEntry(defaultdoc);
 		}
 	}
 	
 	
 	/* Go and get a cache entry, throws an IO Exception if not found */
 	
-	public CouchDBCacheEntry getCacheEntry(String key){
+	public CouchDBCacheEntry getCacheEntry(String key) throws CacheException{
 		Database db = new Database(host, port, database);
-		Object retString = "";
-			
-			CouchDBCacheDocument docnew = db.getDocument(CouchDBCacheDocument.class, key);
-			return new CouchDBCacheEntry(docnew, docnew.getId(), docnew.getData(), docnew.getIdletime(), docnew.getUntil());
-		/*
 		CouchDBCacheDocument docnew = db.getDocument(CouchDBCacheDocument.class, key);
-		retString = docnew.get("data");	
 		
-		CFMLEngine engine = CFMLEngineFactory.getInstance();
-		PageContext pc = engine.getThreadPageContext();
-		try {
-			pc.setVariable("myDeserializer", retString);
-			retString = pc.evaluate("deserializejson(myDeserializer)");
-			pc.setVariable("myDeserializer", retString);
-			retString = pc.evaluate("evaluate(myDeserializer)");
-		} catch (PageException e) {
-			e.printStackTrace();
+		boolean available = docnew.isAvailable();
+		long currenttime = System.currentTimeMillis();
+		if(!available){
+			throw new CacheException("there is no entry in cache with key ["+key+"]");
 		}
+
+		int objHitcount = docnew.getHitcount();
+			docnew.setHitcount(objHitcount+1);
+			docnew.setLastAccessed(new Long(System.currentTimeMillis()).toString());
+			quickSave(docnew);
+
+		return new CouchDBCacheEntry(docnew);		
 		
-		return new CouchDBCacheEntry(docnew,key, retString, null, null);
-		*/
 	}
 
 
-	private Object deserialize(Object object){
-		Object retString = "";
-		CFMLEngine engine = CFMLEngineFactory.getInstance();
-		PageContext pc = engine.getThreadPageContext();
-		try {
-			pc.setVariable("myDeserializer", retString);
-			retString = pc.evaluate("deserializejson(myDeserializer)");
-			pc.setVariable("myDeserializer", object);
-			retString = pc.evaluate("evaluate(myDeserializer)");
-		} catch (PageException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return retString;
-	}
-	
-	private Object serialize(Object object){
-		Object data = object;
-		CFMLEngine engine = CFMLEngineFactory.getInstance();
-		PageContext pc = engine.getThreadPageContext();
+	public boolean contains(String item) {
 		
-		try {
-			pc.setVariable("mySerialize", data);
-			data = pc.evaluate("serialize(mySerialize)");
-			pc.setVariable("mySerialize", data);
-			data = pc.evaluate("serializeJSON(mySerialize)");
+		Database db = new Database(host, port, database);
+		ViewResult vresult = db.listDocuments(null, null);
+		
+		List list=new ArrayList();
+		Iterator it = vresult.getRows().iterator();
+		while(it.hasNext()){
+			ValueRow row = (ValueRow)it.next();
+			if(row.getId().equalsIgnoreCase(item)){
+				return true;
+			}
 			
-		} catch (PageException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
 		
-		return data;
-	}
-	
-	public boolean contains(String arg0) {
-		throw new RuntimeException("method contains not implemented yet");
+		return false;
 	}
 
 	public List entries() {
@@ -213,7 +172,11 @@ public class CouchDBCache implements Cache{
 		Iterator it = vresult.getRows().iterator();
 		while(it.hasNext()){
 			ValueRow row = (ValueRow)it.next();
-			list.add(getCacheEntry(row.getId()));
+			try{
+				list.add(getCacheEntry(row.getId()));
+			}
+			catch (Exception e){}
+			
 		}
 		
 		return list;
@@ -227,11 +190,13 @@ public class CouchDBCache implements Cache{
 		Iterator it = vresult.getRows().iterator();
 		while(it.hasNext()){
 			ValueRow row = (ValueRow)it.next();
-			
-			CouchDBCacheEntry entry = getCacheEntry(row.getId());
-			if(filter.accept(row.getId())){
-				list.add(entry);
+			try{
+				CouchDBCacheEntry entry = getCacheEntry(row.getId());
+				if(filter.accept(row.getId())){
+					list.add(entry);
+				}
 			}
+			catch(Exception e){}
 		}
 		
 		return list;
@@ -240,9 +205,6 @@ public class CouchDBCache implements Cache{
 	public List entries(CacheEntryFilter filter) {
 		throw new RuntimeException("method entries(CacheEntryFilter filter) not implemented yet");
 	}
-
-	
-
 
 	public Struct getCustomInfo() {
 		Struct info=CFMLEngineFactory.getInstance().getCreationUtil().createStruct();
@@ -260,8 +222,6 @@ public class CouchDBCache implements Cache{
 		}
 		catch(IllegalStateException ise) {
 			throw new CacheException(ise.getMessage());
-		} catch (IOException e) {
-			throw new CacheException(e.getMessage());
 		}
 		
 	}
@@ -270,7 +230,6 @@ public class CouchDBCache implements Cache{
 	 * @see railo.commons.io.cache.Cache#getValue(String, java.lang.Object)
 	 */
 	public Object getValue(String key, Object defaultValue) {
-			Object retval = null;
 		try {
 			return getValue(key);
 		}
@@ -330,13 +289,11 @@ public class CouchDBCache implements Cache{
 		try{
 			Map doc = db. getDocument(Map.class, key);
 			db.delete((String)doc.get("_id"), (String)doc.get("_rev"));
+			return true;
 			
 		} catch (NotFoundException nfe){
-			
+			return false;
 		}
-		
-		//if the document exists, then we can delete it 
-		return false;
 	}
 
 	public int remove(CacheKeyFilter filter) {
@@ -348,14 +305,17 @@ public class CouchDBCache implements Cache{
 		while (iterator.hasNext()) {
 			ValueRow row = (ValueRow)iterator.next();
 			Map doc = db.getDocument(Map.class, row.getId());
-			db.delete(row.getId(), (String)doc.get("_rev"));
-			counter++;
+			if(filter.accept(row.getId())){
+				db.delete(row.getId(), (String)doc.get("_rev"));
+				counter++;
+				
+			}
 		}
 		return counter;
 	}
 
 	public int remove(CacheEntryFilter filter) {
-		return remove(filter);
+		throw new RuntimeException("method values not implemented yet");
 	}
 
 	public List values() {
@@ -370,10 +330,6 @@ public class CouchDBCache implements Cache{
 		throw new RuntimeException("method values not implemented yet");
 	}
 	
-	private void log(String logStatement){
-		
-		System.out.println(logStatement);
-		
-	}
+
 
 }

@@ -1,6 +1,7 @@
 package railo.extension.io.cache.couchdb.tests;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -11,6 +12,10 @@ import org.jcouchdb.document.ValueRow;
 import org.jcouchdb.document.ViewResult;
 import org.jcouchdb.exception.NotFoundException;
 import org.jcouchdb.exception.UpdateConflictException;
+import org.svenson.JSONParser;
+import org.svenson.converter.DateConverter;
+import org.svenson.converter.DefaultTypeConverterRepository;
+import org.svenson.converter.TypeConverterRepository;
 
 import railo.extension.io.cache.couchdb.CouchDBCacheDocument;
 import railo.extension.io.cache.couchdb.CouchDBCacheEntry;
@@ -27,18 +32,33 @@ public class CouchDBtest {
 	
 	
 	public static void main(String[] args) {
-
-		//Our own specific couchDB Cache Document
+		
+		
 		Database db = new Database(host, port, database);
 		
-		try {
-			CouchDBCacheDocument doc2 = db.getDocument(CouchDBCacheDocument.class, "bubba");
-		}
-		catch(NotFoundException nfe){
-			System.out.println("Document not found");
-		}
+		CouchDBCacheDocument doc = new CouchDBCacheDocument();
+
+		doc.setId("testTime");
+		doc.setCreatedDate(new Long(System.currentTimeMillis()).toString());
+		doc.setExpires(new Long(System.currentTimeMillis() + 1000).toString());
 		
 		
+		//Try getting the document first
+		try{
+			CouchDBCacheDocument docsaved = db.getDocument(CouchDBCacheDocument.class, doc.getId());
+			db.delete(docsaved);
+			
+		}
+		catch (Exception e){
+		}
+		db.createOrUpdateDocument(doc);
+
+		
+		//Now get the document
+		CouchDBCacheDocument docsaved2 = db.getDocument(CouchDBCacheDocument.class, doc.getId());
+		
+		
+		System.out.println("Done " + docsaved2.getCreatedDate() + " " + doc.getCreatedDate().equals(docsaved2.getCreatedDate()));
 		
 	}
 	
