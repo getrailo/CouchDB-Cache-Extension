@@ -5,17 +5,15 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>Cache Tests</title>
-	<meta name="generator" content="TextMate http://macromates.com/">
-	<meta name="author" content="Mark Drew">
-	<!-- Date: 2010-05-24 -->
 </head>
 <body>
 
 <cfdirectory action="list" directory="#expandPath(".")#" filter="*.cfm" name="cachetests">
 	
 <cfloop query="cachetests">
+<cfoutput>	Running #name#<cfflush interval="10"><br></cfoutput>
 	<cfinclude template="#name#">
-	
+	<cfflush>
 </cfloop>	
 
 </body>
