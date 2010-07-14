@@ -12,7 +12,6 @@
     <cfset b=cacheGet('def')>
     <cfset c=cacheGet('ghi')>
 
-	<cfdump var="#getTickCount() - start#">    	
     <cf_valueEquals left="#structKeyExists(variables,'a')#" right="true">
     <cf_valueEquals left="#structKeyExists(variables,'b')#" right="true">
     <cf_valueEquals left="#structKeyExists(variables,'c')#" right="true">

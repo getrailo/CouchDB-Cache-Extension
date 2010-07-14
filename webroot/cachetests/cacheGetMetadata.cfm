@@ -1,7 +1,6 @@
 <cflock scope="server" timeout="1">
 
 
-	<cfset cacheName="sample">
 	<cfset cacheRemove(arrayToList(cacheGetAllIds()))>
 	
 	<cfset cachePut('abc','123')>
