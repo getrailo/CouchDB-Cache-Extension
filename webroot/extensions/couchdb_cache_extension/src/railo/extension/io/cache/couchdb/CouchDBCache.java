@@ -93,20 +93,29 @@ public class CouchDBCache implements Cache{
 		Database db = new Database(host, port, database);
 			boolean exists = false;
 			CouchDBCacheDocument existingdoc = null;
+			
+		//Try and save it first. if that fails then we set the revision
+			
 		try{
+			db.createDocument(doc);
+			
+		}catch (UpdateConflictException e) {
 			existingdoc = db.getDocument(CouchDBCacheDocument.class, doc.getId());
-			exists = true;
-		}
-		catch (NotFoundException nfe){ }
-		
-		if(exists && existingdoc != null){
+			doc.setUpdatedDate(new Long(System.currentTimeMillis()).toString());
 			doc.setRevision(existingdoc.getRevision());
 			db.updateDocument(doc);
 		}
-		else {
-			db.createDocument(doc);
+		catch (IllegalStateException e) {
+			existingdoc = db.getDocument(CouchDBCacheDocument.class, doc.getId());
+			doc.setUpdatedDate(new Long(System.currentTimeMillis()).toString());
+			doc.setRevision(existingdoc.getRevision());
+			db.updateDocument(doc);
 		}
 		
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+			
 	}
 	
 	public CouchDBCacheEntry getCacheEntry(String key, CacheEntry defaultValue) {
@@ -127,19 +136,24 @@ public class CouchDBCache implements Cache{
 	
 	public CouchDBCacheEntry getCacheEntry(String key) throws CacheException{
 		Database db = new Database(host, port, database);
+		
 		CouchDBCacheDocument docnew = db.getDocument(CouchDBCacheDocument.class, key);
 		
-		boolean available = docnew.isAvailable();
+		boolean available = docnew.isValid();
 		long currenttime = System.currentTimeMillis();
 		if(!available){
 			throw new CacheException("there is no entry in cache with key ["+key+"]");
 		}
 
+		System.out.println("getting " + key);
+		
 		int objHitcount = docnew.getHitcount();
 			docnew.setHitcount(objHitcount+1);
 			docnew.setLastAccessed(new Long(System.currentTimeMillis()).toString());
 			quickSave(docnew);
-
+			
+			
+			
 		return new CouchDBCacheEntry(docnew);		
 		
 	}

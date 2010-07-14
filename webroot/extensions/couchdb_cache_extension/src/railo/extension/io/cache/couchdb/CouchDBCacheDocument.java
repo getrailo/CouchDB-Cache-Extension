@@ -9,7 +9,7 @@ import org.jcouchdb.document.BaseDocument;
 import org.svenson.converter.DateConverter;
 import org.svenson.converter.JSONConverter;
 
-import railo.extension.io.cache.CacheCaster;
+import railo.extension.io.cache.CouchDBCaster;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
@@ -26,14 +26,21 @@ public class CouchDBCacheDocument extends BaseDocument{
 	private String createdDate;
 	private Boolean eternal;
 	private int hitcount = 0;
+	private String updatedDate;
 	
 	
 	public Object getData() {
-		return  CacheCaster.toRailoObject(data);
+		return  CouchDBCaster.toRailoObject(data);
 	}
 	
 	public void setData(Object data) {
-		this.data = data;
+		try{
+			
+			this.data = CouchDBCaster.toCacheObject(data);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	
@@ -55,29 +62,21 @@ public class CouchDBCacheDocument extends BaseDocument{
 	}
 
 	//This checks whether the current Item is actually available to use
-	public boolean isAvailable(){
-		long currentTime = System.currentTimeMillis();
-		long expireTime = new Long(expires).longValue() + new Long(createdDate).longValue();
-		long idleExpireTime = new Long(idleTime).longValue() + new Long(lastAccessed).longValue();
+	public boolean isValid(){
+		long expireTime = new Long(expires).longValue();
+		long created = new Long(createdDate).longValue();
+		long idle = new Long(idleTime).longValue();
+		long lasthit = new Long(lastAccessed).longValue();
 		
-		Date expireDate = new Date(expireTime);
-		Date idleExpireDate = new Date(idleExpireTime);
-		Date currentDate = new Date(currentTime);
-		
-		//Make them into dates so we can really see the details
-		
-		boolean notExpired = expireTime >= currentTime;
-		boolean notTimedOut = idleExpireTime >= currentTime;
-		
-		if(eternal){
-			return true;
+		long now = System.currentTimeMillis();
+		if(expireTime>0 && expireTime+created<now){
+				return false;
 		}
-		
-		if(notTimedOut && notExpired){
-			return true;
+		if(idle>0 && idle+lasthit<now){
+				return false;
 		}
+		return true;
 		
-		return false;
 		
 	}
 
@@ -121,6 +120,14 @@ public class CouchDBCacheDocument extends BaseDocument{
 
 	public Boolean getEternal() {
 		return eternal;
+	}
+
+	public void setUpdatedDate(String updatedDate) {
+		this.updatedDate = updatedDate;
+	}
+
+	public String getUpdatedDate() {
+		return updatedDate;
 	}
 
 

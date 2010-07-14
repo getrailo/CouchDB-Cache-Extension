@@ -21,7 +21,7 @@ public class CouchDBCacheEntry implements CacheEntry {
 	}
 	
 	public Date created() {
-		Date myDate = new Date(document.getCreatedDate());		
+		Date myDate = new Date(new Long(document.getCreatedDate()));		
 		return myDate;
 	}
 
@@ -43,11 +43,11 @@ public class CouchDBCacheEntry implements CacheEntry {
 	}
 
 	public Date lastHit() {
-		return new Date(document.getLastAccessed());
+		return new Date(new Long(document.getLastAccessed()));
 	}
 
 	public Date lastModified() {
-		return new Date(document.getLastAccessed());
+		return new Date(new Long(document.getLastAccessed()));
 	}
 
 	public long liveTimeSpan() {
