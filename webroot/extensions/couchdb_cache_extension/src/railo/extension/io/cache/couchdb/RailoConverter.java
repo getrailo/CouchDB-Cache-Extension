@@ -13,19 +13,23 @@ public class RailoConverter implements TypeConverter {
 	
 	public Object fromJSON(Object in){
 		try{
-			return func.deserializeJSON(in.toString());
+			System.out.println("about to convert " + in);
+			Object ret =func.evaluate(in); 
+			return ret;
 			
 		}catch(Exception e){
-			return "ERROR";
+			e.printStackTrace();
+			throw new RuntimeException("Error converting " + in + " to object");
 		}
 	}
 
 	public Object toJSON(Object in) {
 		try{
-			return func.serializeJSON(in, false);
+			return func.serialize(in);
 			
 		}catch(Exception e){
-			return "ERROR";
+			e.printStackTrace();
+			throw new RuntimeException("Error converting " + in + " to json");
 		}
 	}
 

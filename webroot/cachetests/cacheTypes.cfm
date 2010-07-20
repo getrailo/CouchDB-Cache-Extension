@@ -23,25 +23,26 @@
 	CachePut("query", qry);
 	CachePut("mixed", stItem2);
 	CachePut("obj", cComp);
-	dump(stItem);
+/*
+	dump(serialize(stItem));
 	dump(arrItem);
 	dump(qry);	
 	dump(stItem2);
 	dump(cComp);
-	myStruct = CacheGet("struct");
-	myArray = CacheGet("array");
-	myQuery = CacheGet("query");
-	myMixed = CacheGet("mixed");
-	myObj = CacheGet("obj");
+*/
+	my.Struct = CacheGet("struct");
+	my.Array = CacheGet("array");
+	my.Query = CacheGet("query");
+	my.Mixed = CacheGet("mixed");
+	my.Obj = CacheGet("obj");
 	
-	dump(myStruct);
-	dump(myArray);
-	dump(myObj);
-	dump(myQuery);
 </cfscript>
 
 
-
+<cfdump var="#variables#" abort>
 <cf_valueEquals left="#isStruct(variables.myStruct)#" right="true">
 <cf_valueEquals left="#isArray(variables.myArray)#" right="true">
 <cf_valueEquals left="#isquery(variables.myQuery)#" right="true">
+<cf_valueEquals left="#isStruct(variables.myMixed)#" right="true">
+<cf_valueEquals left="#isArray(variables.myMixed.array)#" right="true">
+<cf_valueEquals left="#isObject(variables.myObj)#" right="true">
