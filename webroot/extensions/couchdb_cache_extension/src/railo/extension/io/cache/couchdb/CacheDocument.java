@@ -1,22 +1,12 @@
 package railo.extension.io.cache.couchdb;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.jcouchdb.document.Attachment;
 import org.jcouchdb.document.BaseDocument;
-import org.svenson.converter.DateConverter;
-import org.svenson.converter.JSONConverter;
 
 import railo.extension.io.cache.CouchDBCaster;
-import railo.loader.engine.CFMLEngine;
-import railo.loader.engine.CFMLEngineFactory;
-import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 
 
-public class CouchDBCacheDocument extends BaseDocument{
+public class CacheDocument extends BaseDocument{
 
 	/* railo specific properties */
 	private Object data;
@@ -24,12 +14,15 @@ public class CouchDBCacheDocument extends BaseDocument{
 	private String expires;
 	private String idleTime;
 	private String createdDate;
-	private Boolean eternal;
 	private int hitcount = 0;
 	private String updatedDate;
 	
 	
-	public Object getData() {
+	public CacheDocument() {
+		super();
+	}
+
+	public Object getData() throws PageException{
 		return  CouchDBCaster.toRailoObject(data);
 	}
 	
@@ -114,14 +107,6 @@ public class CouchDBCacheDocument extends BaseDocument{
 		this.createdDate = createdDate;
 	}
 
-	public void setEternal(Boolean eternal) {
-		this.eternal = eternal;
-	}
-
-	public Boolean getEternal() {
-		return eternal;
-	}
-
 	public void setUpdatedDate(String updatedDate) {
 		this.updatedDate = updatedDate;
 	}
@@ -130,65 +115,4 @@ public class CouchDBCacheDocument extends BaseDocument{
 		return updatedDate;
 	}
 
-
-	
-
-
-	
-	
-	/*
-
-
-	public int getHitcount() {
-		return hitcount;
-	}
-
-	public void setHitcount(int hitcount) {
-		this.hitcount = hitcount;
-	}
-
-
-
-	public void setIdletime(Long idletime) {
-		this.idletime = idletime;
-	}
-
-	public Long getIdletime() {
-		return idletime;
-	}
-
-	public void setUntil(Long until) {
-		this.until = until;
-	}
-
-	public Long getUntil() {
-		return until;
-	}
-	
-	public Boolean getEternal() {
-		return eternal;
-	}
-
-	public void setEternal(Boolean eternal) {
-		this.eternal = eternal;
-	}
-
-	public Integer getIdle() {
-		return idle;
-	}
-
-	public void setIdle(Integer idle) {
-		this.idle = idle;
-	}
-
-	public Integer getLive() {
-		return live;
-	}
-
-	public void setLive(Integer live) {
-		this.live = live;
-	}
-
-
-	*/
 }
