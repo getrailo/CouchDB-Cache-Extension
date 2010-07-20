@@ -24,7 +24,7 @@ public class JSONConfigFactory {
 	        
 	        DefaultTypeConverterRepository typeConverterRepository = new DefaultTypeConverterRepository();
 	        typeConverterRepository.addTypeConverter(new DateConverter());
-	        typeConverterRepository.addTypeConverter(new QueryConverer());
+	        typeConverterRepository.addTypeConverter(new RailoConverter());
 	        
 	        ClassNameBasedTypeMapper typeMapper = new ClassNameBasedTypeMapper();
 	        typeMapper.setBasePackage(CustomObject.class.getPackage().getName());

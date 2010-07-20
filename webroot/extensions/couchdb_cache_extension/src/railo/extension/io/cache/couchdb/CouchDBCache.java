@@ -75,6 +75,8 @@ public class CouchDBCache implements Cache{
 		
 		CacheDocument doc = new CacheDocument();
 			doc.setId(key);
+			
+			
 			doc.setData(value);
 			doc.setCreatedDate(new Long(created).toString());
 			doc.setLastAccessed(new Long(created).toString());
@@ -91,9 +93,9 @@ public class CouchDBCache implements Cache{
 		//We should add the JSON type factory
 		JSONConfigFactory factory = new JSONConfigFactory();
 		JSONConfig config = factory.createJSONConfig();
+		db.setJsonConfig(config);
 		
-			boolean exists = false;
-			CacheDocument existingdoc = null;
+		CacheDocument existingdoc = null;
 			
 		//Try and save it first. if that fails then we set the revision
 			

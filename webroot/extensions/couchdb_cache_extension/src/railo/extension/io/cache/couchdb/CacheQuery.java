@@ -1,17 +1,35 @@
 package railo.extension.io.cache.couchdb;
 
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+
+
+import railo.runtime.type.Query;
+
 public class CacheQuery {
 
-	private String name;
+	private Query query;
+	
 	public CacheQuery() {
 		super();
 	}
-	public String getName() {
-		return name;
+	public CacheQuery(Query query) {
+		this.query = query;
+		
 	}
-	public void setName(String name) {
-		this.name = name;
+	
+	public String[] getColumns(){
+		return query.getColumns();
 	}
-
+	public void setColumns(String[] columns){
+		//We shall do this implementation in a moment
+		
+	}
+	
+	
+	
 	
 }

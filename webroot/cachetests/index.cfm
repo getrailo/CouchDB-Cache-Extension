@@ -12,7 +12,9 @@
 	
 <cfloop query="cachetests">
 <cfoutput>	Running #name#<cfflush interval="10"><br></cfoutput>
+<cfif name NEQ "index.cfm">
 	<cfinclude template="#name#">
+</cfif>
 	<cfflush>
 </cfloop>	
 

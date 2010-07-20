@@ -10,23 +10,34 @@
 	
 	}
 	
+	stItem2 = Duplicate(stItem);
+	stItem2.array = arrItem;
+	
+	cComp = CreateObject("component", "TestObject");
+	cComp.setName("elvis");
+	cComp.setAge(36);
+	
 	
 	CachePut("struct", stItem);
 	CachePut("array", arrItem);
 	CachePut("query", qry);
-
-
+	CachePut("mixed", stItem2);
+	CachePut("obj", cComp);
 	dump(stItem);
 	dump(arrItem);
 	dump(qry);	
-	
+	dump(stItem2);
+	dump(cComp);
 	myStruct = CacheGet("struct");
 	myArray = CacheGet("array");
 	myQuery = CacheGet("query");
+	myMixed = CacheGet("mixed");
+	myObj = CacheGet("obj");
+	
 	dump(myStruct);
 	dump(myArray);
+	dump(myObj);
 	dump(myQuery);
-
 </cfscript>
 
 

@@ -1,12 +1,13 @@
 package railo.extension.io.cache.couchdb;
 
 import org.jcouchdb.document.BaseDocument;
+import org.svenson.converter.JSONConverter;
 
 import railo.extension.io.cache.CouchDBCaster;
 import railo.runtime.exp.PageException;
 
 
-public class CacheDocument extends BaseDocument{
+public class CacheDocument extends BaseDocument {
 
 	/* railo specific properties */
 	private Object data;
@@ -21,19 +22,14 @@ public class CacheDocument extends BaseDocument{
 	public CacheDocument() {
 		super();
 	}
-
+	
+	@JSONConverter( type = RailoConverter.class)
 	public Object getData() throws PageException{
-		return  CouchDBCaster.toRailoObject(data);
+		return  data;
 	}
 	
 	public void setData(Object data) {
-		try{
-			
-			this.data = CouchDBCaster.toCacheObject(data);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		this.data = data;
 	}
 
 	
