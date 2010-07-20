@@ -5,13 +5,14 @@ import java.util.Date;
 
 import railo.commons.io.cache.CacheEntry;
 import railo.loader.engine.CFMLEngineFactory;
+import railo.runtime.exp.PageException;
 import railo.runtime.type.Struct;
 
 public class CouchDBCacheEntry implements CacheEntry {
 
-	private CouchDBCacheDocument document;
+	private CacheDocument document;
 	
-	public CouchDBCacheEntry(CouchDBCacheDocument docnew) {
+	public CouchDBCacheEntry(CacheDocument docnew) {
 		this.document = docnew;
 	}
 	public Struct getCustomInfo() {
@@ -29,8 +30,14 @@ public class CouchDBCacheEntry implements CacheEntry {
 		return document.getId();
 	}
 
-	public Object getValue() {
-		return document.getData(); 
+	public Object getValue(){
+		try{
+			return document.getData(); 
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 
 	public int hitCount() {

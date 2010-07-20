@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.Map.Entry;
 
@@ -24,7 +25,7 @@ public class CouchDBCaster {
 	private static Decision dec;
 	private static Cast cas;
 
-	public static Object toRailoObject(Object value) {
+	public static Object toRailoObject(Object value) throws PageException {
 		// Date
 		/*if(value instanceof Date){
 			try {
@@ -35,6 +36,34 @@ public class CouchDBCaster {
 			}
 			//return DateTimeInew DateTimeI(((DateTime)value).getTime());
 		}*/
+		
+		if(value instanceof HashMap){
+			
+			Struct struct = CFMLEngineFactory.getInstance().getCreationUtil().createStruct();
+				HashMap items = ((HashMap)value);
+				
+				Iterator iterator = items.keySet().iterator();
+			
+				for (Iterator iterator2 = iterator; iterator2
+						.hasNext();) {
+					Object object = (Object) iterator2.next();
+					struct.put(object, items.get(object));
+					
+				}
+			
+			return struct;
+			
+		}
+		if(value instanceof ArrayList){
+			Array array = CFMLEngineFactory.getInstance().getCreationUtil().createArray();
+			ArrayList items = (ArrayList)value;
+			for (int i = 0; i < items.size(); i++) {
+				array.append(items.get(i));
+			}
+			return array;
+		}
+		
+		
 		return value;
 	}
 	
@@ -54,10 +83,10 @@ public class CouchDBCaster {
 		//if(cf instanceof Node) return toAMFObject((Node)cf);
 		//if(cf instanceof Array) return toAMFObject(ArrayAsList.toList((Array)cf));
 		//if(cf instanceof Component)	return toAMFObject((ComponentImpl)cf);
-		if(value instanceof Query){
-			throw new RuntimeException("Query conversion not implemented yet");
+	//	if(value instanceof Query){
+	//		throw new RuntimeException("Query conversion not implemented yet");
 			
-		}
+	//	}
 		//if(cf instanceof Image) return toAMFObject((Image)cf);
 		//if(cf instanceof Map) return toAMFObject((Map)cf);
 		//if(cf instanceof Object[]) return toAMFObject((Object[])cf);
@@ -67,6 +96,8 @@ public class CouchDBCaster {
 		//else if(dec().isArray(value))	return cas().toList(value, true);
 		//else if(value instanceof List)	return toCacheObject((List)value);
 		//else if(value instanceof Array)	return toCacheObject((Array)value);
+		
+		
 		
 		return value;
 	}

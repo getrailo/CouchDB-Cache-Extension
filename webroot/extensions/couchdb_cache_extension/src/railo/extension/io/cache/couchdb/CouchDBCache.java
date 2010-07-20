@@ -13,6 +13,7 @@ import org.jcouchdb.document.ValueRow;
 import org.jcouchdb.document.ViewResult;
 import org.jcouchdb.exception.NotFoundException;
 import org.jcouchdb.exception.UpdateConflictException;
+import org.svenson.JSONConfig;
 
 
 import railo.commons.io.cache.Cache;
@@ -65,34 +66,34 @@ public class CouchDBCache implements Cache{
 	}
 	
 	public void put(String key, Object value, Long idleTime, Long lifespan) {
-		Boolean eternal = idleTime==null && lifespan==null?Boolean.TRUE:Boolean.FALSE;
 		Long created = System.currentTimeMillis();
-		String idle = idleTime==null?"0":new Long(idleTime).toString();
-		String life = lifespan==null?"0":new Long(lifespan).toString();
-			if(idle.equals("0") && life.equals("0")){
-				eternal = Boolean.TRUE;
-			}
+		long idle = idleTime==null?0:idleTime.longValue();
+		long life = lifespan==null?0:lifespan.longValue();
 		
 		
 		//String = liveTime==null?null:new Integer((int)liveTime.longValue()/1000);
 		
-		CouchDBCacheDocument doc = new CouchDBCacheDocument();
+		CacheDocument doc = new CacheDocument();
 			doc.setId(key);
 			doc.setData(value);
 			doc.setCreatedDate(new Long(created).toString());
 			doc.setLastAccessed(new Long(created).toString());
-			doc.setEternal(eternal);
-			doc.setIdleTime(idle);
-			doc.setExpires(life);
+			doc.setIdleTime(String.valueOf(idle));
+			doc.setExpires(String.valueOf(life));
 
 			quickSave(doc);
 		
 	}
 	
-	private void quickSave(CouchDBCacheDocument doc){
+	private void quickSave(CacheDocument doc){
 		Database db = new Database(host, port, database);
+		
+		//We should add the JSON type factory
+		JSONConfigFactory factory = new JSONConfigFactory();
+		JSONConfig config = factory.createJSONConfig();
+		
 			boolean exists = false;
-			CouchDBCacheDocument existingdoc = null;
+			CacheDocument existingdoc = null;
 			
 		//Try and save it first. if that fails then we set the revision
 			
@@ -100,13 +101,13 @@ public class CouchDBCache implements Cache{
 			db.createDocument(doc);
 			
 		}catch (UpdateConflictException e) {
-			existingdoc = db.getDocument(CouchDBCacheDocument.class, doc.getId());
+			existingdoc = db.getDocument(CacheDocument.class, doc.getId());
 			doc.setUpdatedDate(new Long(System.currentTimeMillis()).toString());
 			doc.setRevision(existingdoc.getRevision());
 			db.updateDocument(doc);
 		}
 		catch (IllegalStateException e) {
-			existingdoc = db.getDocument(CouchDBCacheDocument.class, doc.getId());
+			existingdoc = db.getDocument(CacheDocument.class, doc.getId());
 			doc.setUpdatedDate(new Long(System.currentTimeMillis()).toString());
 			doc.setRevision(existingdoc.getRevision());
 			db.updateDocument(doc);
@@ -125,7 +126,7 @@ public class CouchDBCache implements Cache{
 		}
 		catch(Exception nfe){
 			misses++;
-			CouchDBCacheDocument defaultdoc = new CouchDBCacheDocument();
+			CacheDocument defaultdoc = new CacheDocument();
 				defaultdoc.setData(defaultValue);
 			return new CouchDBCacheEntry(defaultdoc);
 		}
@@ -137,7 +138,7 @@ public class CouchDBCache implements Cache{
 	public CouchDBCacheEntry getCacheEntry(String key) throws CacheException{
 		Database db = new Database(host, port, database);
 		
-		CouchDBCacheDocument docnew = db.getDocument(CouchDBCacheDocument.class, key);
+		CacheDocument docnew = db.getDocument(CacheDocument.class, key);
 		
 		boolean available = docnew.isValid();
 		long currenttime = System.currentTimeMillis();
