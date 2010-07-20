@@ -1,26 +1,17 @@
 package railo.extension.io.cache.couchdb.tests;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.jcouchdb.db.Database;
-import org.jcouchdb.document.Document;
-import org.jcouchdb.document.ValueRow;
-import org.jcouchdb.document.ViewResult;
-import org.jcouchdb.exception.NotFoundException;
-import org.jcouchdb.exception.UpdateConflictException;
+import org.jcouchdb.db.ServerImpl;
+import org.svenson.JSON;
+import org.svenson.JSONConfig;
 import org.svenson.JSONParser;
 import org.svenson.converter.DateConverter;
 import org.svenson.converter.DefaultTypeConverterRepository;
-import org.svenson.converter.TypeConverterRepository;
+import org.svenson.converter.JSONConverter;
 
-import railo.extension.io.cache.couchdb.CouchDBCacheDocument;
-import railo.extension.io.cache.couchdb.CouchDBCacheEntry;
-
-import java.util.List;
+import railo.extension.io.cache.couchdb.JSONConfigFactory;
 
 
 
@@ -33,38 +24,24 @@ public class CouchDBtest {
 	
 	public static void main(String[] args) {
 		
+		ServerImpl myserver = new ServerImpl("localhost");
+		JSONConfigFactory factory = new JSONConfigFactory();
+		JSONConfig config = factory.createJSONConfig();
 		
-		Database db = new Database(host, port, database);
 		
-		CouchDBCacheDocument doc = new CouchDBCacheDocument();
+		
+		Database db = new Database(myserver, database);
+		db.setJsonConfig(config);
 
-		doc.setId("testTime");
-		doc.setCreatedDate(new Long(System.currentTimeMillis()).toString());
-		doc.setExpires(new Long(System.currentTimeMillis() + 1000).toString());
+		long objectid = System.currentTimeMillis();
+		CustomObject obj = new CustomObject(String.valueOf(objectid), new Date());
+		obj.setId(String.valueOf(objectid));
+		db.createDocument(obj);
 		
-		
-		//Try getting the document first
-		try{
-			CouchDBCacheDocument docsaved = db.getDocument(CouchDBCacheDocument.class, doc.getId());
-			db.delete(docsaved);
-			
-		}
-		catch (Exception e){
-		}
-		db.createOrUpdateDocument(doc);
-
-		
-		//Now get the document
-		CouchDBCacheDocument docsaved2 = db.getDocument(CouchDBCacheDocument.class, doc.getId());
-		
-		
-		System.out.println("Done " + docsaved2.getCreatedDate() + " " + doc.getCreatedDate().equals(docsaved2.getCreatedDate()));
-		
+		System.out.println("Saved object");
+		CustomObject document = db.getDocument(CustomObject.class, String.valueOf(objectid)); //errors here
+		System.out.println("retrieved object"); 
 	}
 	
 	
-	private static Object deserialize(Object object){
-		return object;
-	}
-
 }
