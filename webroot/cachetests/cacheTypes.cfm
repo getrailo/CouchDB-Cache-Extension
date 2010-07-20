@@ -18,22 +18,19 @@
 
 	dump(stItem);
 	dump(arrItem);
-	//dump(qry);	
+	dump(qry);	
 	
 	myStruct = CacheGet("struct");
 	myArray = CacheGet("array");
-
+	myQuery = CacheGet("query");
 	dump(myStruct);
 	dump(myArray);
+	dump(myQuery);
 
 </cfscript>
 
 
 
-<!--- <cfset myQuery = CacheGet("query")> --->
-
-
-<cfaborT>
 <cf_valueEquals left="#isStruct(variables.myStruct)#" right="true">
 <cf_valueEquals left="#isArray(variables.myArray)#" right="true">
 <cf_valueEquals left="#isquery(variables.myQuery)#" right="true">
