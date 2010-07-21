@@ -12,15 +12,32 @@
 
 <config>
 	<info>
+	
 		<id>10EEC23A-0779-4068-9507A9C5ED4A8646</id>
 		<version>{version}</version>
 		<name>couch</name>
 		<type>server</type>
 		<label>CouchDB Cache</label>
 		<description>CouchDB Cache extension</description>
-		<!-- <created>2009-8-12T12:0:0+0:0</created> -->
 		<created>{created}</created> 
-		<category>Core Extension</category>    
+		<category>Core Extension</category>  
+		
+		
+		<!-- other valid items are:
+		image
+		download
+		paypal
+		author
+		codename
+		video
+		support
+		documentation
+		forum
+		mailinglist
+		network
+	-->
+		
+		  
 	</info>
 </config>
 

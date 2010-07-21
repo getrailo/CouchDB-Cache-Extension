@@ -49,7 +49,7 @@
 
 	<target name="replaceConfigVars" depends="copyLibs">
 		<copy file="${extPath}/config.template.xml" tofile="${extPath}/config.xml" overwrite="true" />
-		<replace file="${extPath}/config.xml" token="{version}" value="1.${stamp.DSTAMP}${stamp.TSTAMP}" />
+		<replace file="${extPath}/config.xml" token="{version}" value="0.1.${stamp.DSTAMP}${stamp.TSTAMP}" />
 		<replace file="${extPath}/config.xml" token="{created}" value="${created.TODAY} ${created.TSTAMP}" />
 	</target>
 	
