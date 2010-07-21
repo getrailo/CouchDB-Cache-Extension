@@ -18,7 +18,7 @@
 					
 			field(	displayName="Database",
 					name="database",
-					defaultValue="railo_cache_test",
+					defaultValue="",
 					required=true,
 					description="The name of the database on the CouchDB server to use",
 					type="text"
