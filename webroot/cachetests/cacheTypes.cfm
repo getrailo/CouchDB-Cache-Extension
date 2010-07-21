@@ -39,10 +39,9 @@
 </cfscript>
 
 
-<cfdump var="#variables#" abort>
-<cf_valueEquals left="#isStruct(variables.myStruct)#" right="true">
-<cf_valueEquals left="#isArray(variables.myArray)#" right="true">
-<cf_valueEquals left="#isquery(variables.myQuery)#" right="true">
-<cf_valueEquals left="#isStruct(variables.myMixed)#" right="true">
-<cf_valueEquals left="#isArray(variables.myMixed.array)#" right="true">
-<cf_valueEquals left="#isObject(variables.myObj)#" right="true">
+<cf_valueEquals left="#isStruct(variables.my.Struct)#" right="true">
+<cf_valueEquals left="#isArray(variables.my.Array)#" right="true">
+<cf_valueEquals left="#isquery(variables.my.Query)#" right="true">
+<cf_valueEquals left="#isStruct(variables.my.Mixed)#" right="true">
+<cf_valueEquals left="#isArray(variables.my.Mixed.array)#" right="true">
+<cf_valueEquals left="#isObject(variables.my.Obj)#" right="true">
