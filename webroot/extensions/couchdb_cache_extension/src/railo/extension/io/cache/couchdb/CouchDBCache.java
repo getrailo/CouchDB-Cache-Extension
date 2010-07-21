@@ -2,8 +2,6 @@ package railo.extension.io.cache.couchdb;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -43,15 +41,15 @@ public class CouchDBCache implements Cache{
 
 	/**
 	 * @deprecated this method is no longer used by railo and ignored as long the method <code>init(Config config, String cacheName, Struct arguments)</code> exists
+	 * 
+	 * Config.class,String[].class,Struct[].class
 	 */
 	public void init(String cacheName, Struct arguments) throws IOException {
 		//Not used at the moment
 	}
-	
 	public void init(Config config ,String[] cacheName,Struct[] arguments){
 		//Not used at the moment
 	}
-
 	public void init(Config config, String cacheName, Struct arguments) {
 		
 		this.cacheName = cacheName;
@@ -102,6 +100,7 @@ public class CouchDBCache implements Cache{
 		JSONConfigFactory factory = new JSONConfigFactory();
 		JSONConfig config = factory.createJSONConfig();
 		db.setJsonConfig(config);
+		
 		
 		CacheDocument existingdoc = null;
 			
