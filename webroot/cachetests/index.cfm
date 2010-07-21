@@ -11,8 +11,8 @@
 <cfdirectory action="list" directory="#expandPath(".")#" filter="*.cfm" name="cachetests">
 	
 <cfloop query="cachetests">
-<cfoutput>	Running #name#<cfflush interval="10"><br></cfoutput>
 <cfif name NEQ "index.cfm">
+	<cfoutput>	Running #name#<cfflush interval="10"><br></cfoutput>
 	<cfinclude template="#name#">
 </cfif>
 	<cfflush>
