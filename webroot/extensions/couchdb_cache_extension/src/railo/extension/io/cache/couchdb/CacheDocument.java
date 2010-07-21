@@ -4,13 +4,14 @@ import org.jcouchdb.document.BaseDocument;
 import org.svenson.converter.JSONConverter;
 
 import railo.extension.io.cache.CouchDBCaster;
+import railo.extension.util.Functions;
 import railo.runtime.exp.PageException;
 
 
 public class CacheDocument extends BaseDocument {
 
 	/* railo specific properties */
-	private Object data;
+	private String data;
 	private String lastAccessed;
 	private String expires;
 	private String idleTime;
@@ -18,17 +19,17 @@ public class CacheDocument extends BaseDocument {
 	private int hitcount = 0;
 	private String updatedDate;
 	
+	private Functions func = new Functions();
 	
-	public CacheDocument() {
-		super();
+	public CacheDocument() {}
+	
+	//@JSONConverter( type = RailoConverter.class)
+	public String getData(){
+		return data;
 	}
 	
-	@JSONConverter( type = RailoConverter.class)
-	public Object getData() throws PageException{
-		return  data;
-	}
-	
-	public void setData(Object data) {
+	//@JSONConverter( type = RailoConverter.class)
+	public void setData(String data) {
 		this.data = data;
 	}
 

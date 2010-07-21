@@ -118,8 +118,8 @@ public class Functions {
 				Class clazz = cl.loadClass(EVALUATE_CLASS);
 				evaluate=clazz.getMethod("call", new Class[]{PageContext.class, Object[].class});
 			}
-			Object obj2 = evaluate.invoke( pc, new Object[]{ pc(),new Object[]{obj}});
-			return obj2;
+			Object obj2 = evaluate.invoke( pc, new Object[]{ pc,new Object[]{obj}});
+			return  obj2;
 		}
 		catch(Throwable t){
 			throw caster.toPageException(t);

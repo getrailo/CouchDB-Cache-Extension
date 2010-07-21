@@ -21,10 +21,12 @@ import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.CacheEntryFilter;
 import railo.commons.io.cache.CacheKeyFilter;
 import railo.commons.io.cache.exp.CacheException;
+import railo.extension.util.Functions;
 
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.config.Config;
+import railo.runtime.exp.PageException;
 import railo.runtime.type.Struct;
 import railo.runtime.util.Cast;
 
@@ -35,6 +37,7 @@ public class CouchDBCache implements Cache{
 	private int port = 5984;
 	private String database = "";
 	
+	private Functions func = new Functions();
 	private int hits = 0;
 	private int misses = 0;
 
@@ -77,7 +80,12 @@ public class CouchDBCache implements Cache{
 			doc.setId(key);
 			
 			
-			doc.setData(value);
+			try {
+				doc.setData(func.serialize(value));
+			} catch (PageException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			doc.setCreatedDate(new Long(created).toString());
 			doc.setLastAccessed(new Long(created).toString());
 			doc.setIdleTime(String.valueOf(idle));
@@ -129,7 +137,12 @@ public class CouchDBCache implements Cache{
 		catch(Exception nfe){
 			misses++;
 			CacheDocument defaultdoc = new CacheDocument();
-				defaultdoc.setData(defaultValue);
+				try {
+					defaultdoc.setData(func.serialize(defaultValue));
+				} catch (PageException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			return new CouchDBCacheEntry(defaultdoc);
 		}
 	}
@@ -148,8 +161,6 @@ public class CouchDBCache implements Cache{
 			throw new CacheException("there is no entry in cache with key ["+key+"]");
 		}
 
-		System.out.println("getting " + key);
-		
 		int objHitcount = docnew.getHitcount();
 			docnew.setHitcount(objHitcount+1);
 			docnew.setLastAccessed(new Long(System.currentTimeMillis()).toString());

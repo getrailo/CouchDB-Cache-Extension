@@ -4,6 +4,7 @@ import java.util.Date;
 
 
 import railo.commons.io.cache.CacheEntry;
+import railo.extension.util.Functions;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Struct;
@@ -11,6 +12,7 @@ import railo.runtime.type.Struct;
 public class CouchDBCacheEntry implements CacheEntry {
 
 	private CacheDocument document;
+	private Functions func = new Functions();
 	
 	public CouchDBCacheEntry(CacheDocument docnew) {
 		this.document = docnew;
@@ -31,13 +33,13 @@ public class CouchDBCacheEntry implements CacheEntry {
 	}
 
 	public Object getValue(){
-		try{
-			return document.getData(); 
-			
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "";
+			try {
+				return func.evaluate(document.getData());
+			} catch (PageException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return "";
+			} 
 	}
 
 	public int hitCount() {
