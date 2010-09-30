@@ -87,20 +87,25 @@ you instructions on how to currently obtain paid extensions.
         <cfset var exp="this extension is experimental and will no longer work with the final release of railo 3.1, it is not allowed to use this extension in a productve enviroment.">
         
         <cfset var rootURL=getInfo().url & "/extensions/">
-        <cfset var zipFileLocation = 'ext/CouchDBCache.zip'>
+        <cfset var zipFileLocation = "" />
+		<cfset var extensions = "" />
+		<cfset var c = "" />
+		<cfset var colList = apps.columnlist>
 		
-		<cffile action="read" file="zip://#expandPath(zipFileLocation)#!/config.xml" variable="config">
-		<cfset info = XMLParse(config)>
-
-        <cfset QueryAddRow(apps)>
-      	<cfset QuerySetCell(apps,'download',rootURL & zipFileLocation)>
-        <cfset QuerySetCell(apps,'id', info.config.info.id.XMLtext)>
-        <cfset QuerySetCell(apps,'name',info.config.info.name.XMLtext)>
-        <cfset QuerySetCell(apps,'type',info.config.info.type.XMLtext)>
-        <cfset QuerySetCell(apps,'label',info.config.info.label.XMLtext)>
-        <cfset QuerySetCell(apps,'description',info.config.info.description.XMLtext)>
-        <cfset QuerySetCell(apps,'created',info.config.info.created.XMLtext)>
-        <cfset QuerySetCell(apps,'version',info.config.info.version.XMLtext)>
-        <cfset QuerySetCell(apps,'category',info.config.info.category.XMLtext)>
+		
+		<cfdirectory action="list" directory="ext/" filter="*.zip" name="extensions">
+		<cfloop query="extensions">
+	    	<cfset var zipFileLocation = 'ext/#extensions.name#'>
+			<cffile action="read" file="zip://#expandPath(zipFileLocation)#!/config.xml" variable="config">
+			<cfset info = XMLParse(config)>
+	        <cfset QueryAddRow(apps)>
+	      	<cfset QuerySetCell(apps,'download',rootURL & zipFileLocation)>
+			<cfloop array="#info.config.info.XmlChildren#" index="c">
+				<cfif ListFindNoCase(colList, c.XMLName)>
+			        <cfset QuerySetCell(apps,c.XMLName, c.XMLtext)>
+				</cfif>
+			</cfloop>
+       
+		</cfloop>
 	</cffunction>
 </cfcomponent>
