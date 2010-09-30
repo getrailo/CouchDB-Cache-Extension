@@ -3,7 +3,7 @@
 	<cfscript>
 		variables.name = "CouchDBCache";
 		variables.id = "railo_couchdbcache";
-		variables.jar = "CouchDBCache.jar"
+		variables.jar = "couchdb-cache.jar"
 		variables.driver = "CouchDBCache.cfc"
 		variables.jars = "#variables.jar#,commons-beanutils-1.8.0.jar,httpclient-4.0.jar,httpcore-4.0.1.jar,jcouchdb-0.11.0-1.jar,slf4j-api-1.5.6.jar,slf4j-log4j12-1.5.6.jar,svenson-1.3.7.jar";
 		

@@ -43,7 +43,7 @@
 
 	
 	<target name="compressExtension" depends="replaceConfigVars">
-		<zip destfile="ext/CouchDBCache.zip" basedir="couchdb_cache_extension/" excludes="couchdb_cache_extension/src" />		
+		<zip destfile="ext/couchdb-cache.zip" basedir="couchdb_cache_extension/" excludes="couchdb_cache_extension/src" />		
 	</target>
 	
 
@@ -78,7 +78,7 @@
 			
 		
 		</javac>
-		<jar basedir="couchdb_cache_extension/src" destfile="couchdb_cache_extension/lib/CouchDBCache.jar" />
+		<jar basedir="couchdb_cache_extension/src" destfile="couchdb_cache_extension/lib/couchdb-cache.jar" />
 	</target>
 	
 	<target name="deleteArchives">

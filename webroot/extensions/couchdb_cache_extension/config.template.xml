@@ -14,13 +14,18 @@
 	<info>
 		<id>10EEC23A-0779-4068-9507A9C5ED4A8646</id>
 		<version>{version}</version>
-		<name>couch</name>
+		<name>CouchDB</name>
 		<type>server</type>
-		<label>CouchDB Cache</label>
-		<description>CouchDB Cache extension</description>
+		<label>CouchDB Cache (Beta)</label>
+		<description>Beta version of the CouchDB Cache Extension</description>
 		<!-- <created>2009-8-12T12:0:0+0:0</created> -->
-		<created>{created}</created> 
-		<category>Core Extension</category>    
+		<created>{created}</created>
+		<author>Mark Drew (mark@getrailo.com)</author>
+		<documentation>http://wiki.getrailo.com/wiki/extensions:couchdb</documentation> 
+		<mailinglist>http://groups.google.com/group/railo-prerelease</mailinglist>
+		<image>http://preview.getrailo.org/logos/couchdb-logo.png</image>
+		<category>Core Extension</category>
+		
 	</info>
 </config>
 
