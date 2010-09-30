@@ -1,4 +1,4 @@
-<cfset server.enableCache=true>
+	<cfset server.enableCache=true>
 
 <cflock scope="server" timeout="10">
 	<cfset cacheName="couchCache">
