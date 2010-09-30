@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="webroot/extensions/couchdb_cache_extension/src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Railo+Jetty"/>
-	<classpathentry kind="lib" path="webroot/extensions/lib/jcouchdb-0.11.0-1.jar" sourcepath="/jcouchdb"/>
+	<classpathentry kind="lib" path="webroot/extensions/lib/jcouchdb-0.11.0-1.jar" sourcepath="/jcouchdb/src"/>
 	<classpathentry kind="lib" path="webroot/extensions/lib/svenson-1.3.7.jar" sourcepath="/svenson"/>
 	<classpathentry kind="lib" path="webroot/extensions/lib/httpclient-4.0.jar"/>
 	<classpathentry kind="lib" path="webroot/extensions/lib/httpcore-4.0.1.jar"/>
 	<classpathentry kind="lib" path="webroot/extensions/lib/slf4j-api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="webroot/extensions/lib/slf4j-log4j12-1.5.6.jar"/>
 	<classpathentry kind="lib" path="webroot/extensions/lib/commons-beanutils-1.8.0.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api-2.5-20081211.jar"/>
+	<classpathentry kind="lib" path="lib/javax.servlet.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-6.1.20.jar"/>
+	<classpathentry kind="lib" path="lib/railo.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Railo+Jetty"/>
 	<classpathentry kind="output" path="webroot/extensions/bin"/>
 </classpath>
