@@ -1,7 +1,7 @@
 <!--- We can read the congfig here --->
 <cfset exp="this extension is experimental and will no longer work with the final release of railo 3.1, it is not allowed to use this extension in a productve enviroment.">
 <cfset rootURL="http://#CGI.server_name#:#CGI.server_port#/extensions/">
-<cfset zipFileLocation = 'ext/CouchDBCache.zip'>
+<cfset zipFileLocation = 'ext/couchdb-cache.zip'>
 <cffile action="read" file="zip://#expandPath(zipFileLocation)#!/config.xml" variable="config">
 <cfset info = XMLParse(config)>
 
