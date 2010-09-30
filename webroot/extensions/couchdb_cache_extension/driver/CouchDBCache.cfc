@@ -59,7 +59,7 @@
     </cffunction>
     
 	<cffunction name="getLabel" returntype="string" output="no">
-    	<cfreturn "CouchDBCache">
+    	<cfreturn "CouchDB">
     </cffunction>
 	<cffunction name="getDescription" returntype="string" output="no">
     	<cfset var c="">
