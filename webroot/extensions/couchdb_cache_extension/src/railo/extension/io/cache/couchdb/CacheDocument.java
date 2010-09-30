@@ -1,25 +1,19 @@
 package railo.extension.io.cache.couchdb;
 
 import org.jcouchdb.document.BaseDocument;
-import org.svenson.converter.JSONConverter;
-
-import railo.extension.io.cache.CouchDBCaster;
-import railo.extension.util.Functions;
-import railo.runtime.exp.PageException;
 
 
 public class CacheDocument extends BaseDocument {
 
 	/* railo specific properties */
 	private String data;
+	private Object jsonData; //This is just an object version of the serialised data
 	private String lastAccessed;
 	private String expires;
 	private String idleTime;
 	private String createdDate;
 	private int hitcount = 0;
 	private String updatedDate;
-	
-	private Functions func = new Functions();
 	
 	public CacheDocument() {}
 	
@@ -110,6 +104,14 @@ public class CacheDocument extends BaseDocument {
 
 	public String getUpdatedDate() {
 		return updatedDate;
+	}
+
+	public void setJsonData(Object jsonData) {
+		this.jsonData = jsonData;
+	}
+
+	public Object getJsonData() {
+		return jsonData;
 	}
 
 }

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.jcouchdb.db.Database;
+import org.jcouchdb.db.Options;
+import org.jcouchdb.db.ServerImpl;
 import org.jcouchdb.document.ValueRow;
 import org.jcouchdb.document.ViewResult;
 import org.jcouchdb.exception.NotFoundException;
@@ -38,17 +40,20 @@ public class CouchDBCache implements Cache{
 	private Functions func = new Functions();
 	private int hits = 0;
 	private int misses = 0;
+	private ServerImpl server;
+	private Database db;
 
 	/**
 	 * @deprecated this method is no longer used by railo and ignored as long the method <code>init(Config config, String cacheName, Struct arguments)</code> exists
 	 * 
 	 * Config.class,String[].class,Struct[].class
 	 */
+	
 	public void init(String cacheName, Struct arguments) throws IOException {
-		//Not used at the moment
+		System.out.println("Calling init 1");
 	}
 	public void init(Config config ,String[] cacheName,Struct[] arguments){
-		//Not used at the moment
+		System.out.println("Calling init 2");
 	}
 	public void init(Config config, String cacheName, Struct arguments) {
 		
@@ -60,6 +65,11 @@ public class CouchDBCache implements Cache{
 			this.host = caster.toString(arguments.get("host"));
 			this.port = caster.toIntValue(arguments.get("port"));
 			this.database = caster.toString(arguments.get("database"));
+			this.server = new ServerImpl(this.host, this.port);
+			this.db = new Database(server, this.database);
+			JSONConfigFactory factory = new JSONConfigFactory();
+			JSONConfig jsonconfig = factory.createJSONConfig();
+			this.db.setJsonConfig(jsonconfig);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -80,6 +90,7 @@ public class CouchDBCache implements Cache{
 			
 			try {
 				doc.setData(func.serialize(value));
+				doc.setJsonData(func.serializeJSON(value, false));
 			} catch (PageException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -94,32 +105,22 @@ public class CouchDBCache implements Cache{
 	}
 	
 	private void quickSave(CacheDocument doc){
-		Database db = new Database(host, port, database);
-		
-		//We should add the JSON type factory
-		JSONConfigFactory factory = new JSONConfigFactory();
-		JSONConfig config = factory.createJSONConfig();
-		db.setJsonConfig(config);
-		
-		
 		CacheDocument existingdoc = null;
 			
-		//Try and save it first. if that fails then we set the revision
-			
 		try{
-			db.createDocument(doc);
+			this.db.createDocument(doc);
 			
 		}catch (UpdateConflictException e) {
 			existingdoc = db.getDocument(CacheDocument.class, doc.getId());
 			doc.setUpdatedDate(new Long(System.currentTimeMillis()).toString());
 			doc.setRevision(existingdoc.getRevision());
-			db.updateDocument(doc);
+			this.db.updateDocument(doc);
 		}
 		catch (IllegalStateException e) {
 			existingdoc = db.getDocument(CacheDocument.class, doc.getId());
 			doc.setUpdatedDate(new Long(System.currentTimeMillis()).toString());
 			doc.setRevision(existingdoc.getRevision());
-			db.updateDocument(doc);
+			this.db.updateDocument(doc);
 		}
 		
 		catch (Exception e) {
@@ -150,9 +151,8 @@ public class CouchDBCache implements Cache{
 	/* Go and get a cache entry, throws an IO Exception if not found */
 	
 	public CouchDBCacheEntry getCacheEntry(String key) throws CacheException{
-		Database db = new Database(host, port, database);
 		
-		CacheDocument docnew = db.getDocument(CacheDocument.class, key);
+		CacheDocument docnew = this.db.getDocument(CacheDocument.class, key);
 		
 		boolean available = docnew.isValid();
 		long currenttime = System.currentTimeMillis();
@@ -174,8 +174,7 @@ public class CouchDBCache implements Cache{
 
 	public boolean contains(String item) {
 		
-		Database db = new Database(host, port, database);
-		ViewResult vresult = db.listDocuments(null, null);
+		ViewResult vresult = this.db.listDocuments(null, null);
 		
 		List list=new ArrayList();
 		Iterator it = vresult.getRows().iterator();
@@ -192,10 +191,15 @@ public class CouchDBCache implements Cache{
 
 	public List entries() {
 		
-		Database db = new Database(host, port, database);
-		ViewResult vresult = db.listDocuments(null, null);
-		
+		Options opts = new Options();
+		ViewResult vresult = this.db.query("_all_docs", CacheDocument.class, opts, null,null);
 		List list=new ArrayList();
+		for(int i=0; i < vresult.getTotalRows(); i++){
+			
+			
+		}
+		
+		
 		Iterator it = vresult.getRows().iterator();
 		while(it.hasNext()){
 			ValueRow row = (ValueRow)it.next();
@@ -233,10 +237,16 @@ public class CouchDBCache implements Cache{
 		throw new RuntimeException("method entries(CacheEntryFilter filter) not implemented yet");
 	}
 
-	public Struct getCustomInfo() {
+	public Struct getCustomInfo() { 
 		Struct info=CFMLEngineFactory.getInstance().getCreationUtil().createStruct();
+				
+		Database db = new Database(host, port, database);
+		ViewResult vresult = db.listDocuments(null, null);
+		
 		return info;
 	}
+	
+	
 
 	public Object getValue(String key) throws CacheException {
 		try {
@@ -354,7 +364,7 @@ public class CouchDBCache implements Cache{
 	}
 
 	public List values(CacheEntryFilter arg0) {
-		throw new RuntimeException("method values not implemented yet");
+		throw new RuntimeException("method values  by entry not implemented yet");
 	}
 	
 

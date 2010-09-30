@@ -1,9 +1,16 @@
 package railo.extension.io.cache.couchdb.tests;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import org.jcouchdb.db.Database;
+import org.jcouchdb.db.Options;
 import org.jcouchdb.db.ServerImpl;
+import org.jcouchdb.document.ValueRow;
+import org.jcouchdb.document.ViewResult;
 import org.svenson.JSON;
 import org.svenson.JSONConfig;
 import org.svenson.JSONParser;
@@ -11,6 +18,7 @@ import org.svenson.converter.DateConverter;
 import org.svenson.converter.DefaultTypeConverterRepository;
 import org.svenson.converter.JSONConverter;
 
+import railo.extension.io.cache.couchdb.CacheDocument;
 import railo.extension.io.cache.couchdb.JSONConfigFactory;
 
 
@@ -28,19 +36,23 @@ public class CouchDBtest {
 		JSONConfigFactory factory = new JSONConfigFactory();
 		JSONConfig config = factory.createJSONConfig();
 		
-		
-		
 		Database db = new Database(myserver, database);
 		db.setJsonConfig(config);
 
-		long objectid = System.currentTimeMillis();
-		CustomObject obj = new CustomObject(String.valueOf(objectid), new Date());
-		obj.setId(String.valueOf(objectid));
-		db.createDocument(obj);
 		
-		System.out.println("Saved object");
-		CustomObject document = db.getDocument(CustomObject.class, String.valueOf(objectid)); //errors here
-		System.out.println("retrieved object"); 
+		
+		Options opts = new Options();
+		
+		ViewResult result = db.query("_all_docs", CacheDocument.class, opts, null,null);
+		
+		List rows = result.getRows();
+		for (Iterator iterator = rows.iterator(); iterator.hasNext();) {
+			ValueRow object = (ValueRow) iterator.next();
+			System.out.println(object.getId());
+		}
+		
+
+		
 	}
 	
 	
